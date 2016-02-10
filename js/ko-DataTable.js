@@ -1,6 +1,21 @@
 (function () {
     
     (function(){
+        
+        //Available option for creating instance
+        //int:pageSize        
+        //bool:serverSide
+        //string:url
+        //bool:deferRender
+        //bool:showProcessing
+        //string:searchField
+        
+        //Can be used in html data-binding        
+        //:itemsOnCurrentPage:observableArray
+        //:info:string
+        //:totalRows:int
+        //observable:searchValue
+        
         function dataTable(configuration){
             var self = this, draw = 0;
             self.disposable = [];

@@ -210,7 +210,8 @@
                 this.searchAjaxSource = function (data, e){ if(typeof e.keyCode === 'undefined' || e.keyCode === 13) this.tbl.tblAjaxSource(); };
 
                 this.alertInfo = function(data, e){
-                    alert(data.username);
+                    setTimeout(function(){console.log(data.username)},2000);
+                    //alert(data.username);
                 };
             }
 
