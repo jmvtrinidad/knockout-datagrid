@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-debug.js"></script>
+        <script src="C:\Users\jmvtrinidad\Source\Repos\ko-DataTable\ko-DataTable.js"></script>
+    </head>
+    <body>
+
+        <div class="row" style="margin-bottom:10px;">
+            <div class="col-sm-12">
+                <div class="form-inline">
+                    <label for="txtSearch">Search</label>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="txtSearch" placeholder="" data-bind="value: tbl.searchValue, event : { keyup: search }">
+                    </div>
+                    <button class="btn btn-info" data-bind="click: search"><i class="glyphicon glyphicon-search"></i>&nbsp;&nbsp;Search</button>
+                </div>
+            </div>
+        </div>
+        
+        <div data-bind="simpleGrid: tbl">
+            <table class="table table-bordered table-condensed">
+                <thead>
+                    <tr>
+                        <td>Username</td>
+                        <td>CreatedOn/By</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-bind="visible: totalRows() === 0" style="background-color: #f9f9f9;">
+                        <td colspan="3">No record/s to display.</td>
+                    </tr>
+                    <!--ko foreach: itemsOnCurrentPage-->
+                    <tr>
+                        <td>
+                            <a href="#" data-bind="text:username, click:$parent.alertInfo"></a>
+                        </td>
+                        <td data-bind="text:emailAddress"></td>
+                    </tr>
+                    <!--/ko-->
+                </tbody>
+            </table>
+            <span data-bind="text:info()"></span>
+        </div>
+        
+        <script>
+            function AppViewModel() {
+                this.items = ko.observableArray([]);
+                for(var i = 0; i < 100; i++){
+                    this.items.push({
+                        username: 'username' + i,
+                        emailAddress: 'username' + i + '@gmail.com'
+                    });
+                }
+
+                this.tbl = new ko.dataTable.vm({ data: this.items, searchField: 'username' });
+
+                this.search = function (data, e){ if(typeof e.keyCode === 'undefined' || e.keyCode === 13) this.tbl.search(); };
+
+                this.alertInfo = function(data, e){
+                    alert(data.username);
+                };
+            }
+
+            // Activates knockout.js
+            ko.applyBindings(new AppViewModel());
+        </script>
+    </body>
+</html>
