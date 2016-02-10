@@ -176,7 +176,7 @@ a {
   .main-content blockquote > :last-child {
     margin-bottom: 0; }
 .main-content table {
-  display: block;
+  /*display: block;*/
   width: 100%;
   overflow: auto;
   word-break: normal;
@@ -243,3 +243,7 @@ a {
 @media screen and (max-width: 42em) {
   .site-footer {
     font-size: 0.9rem; } }
+
+.bottom-offset{
+    margin-bottom: 10px;
+}

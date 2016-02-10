@@ -11,7 +11,7 @@
             self.serverSide = configuration.serverSide ? true : false;
             self.pageSize = configuration.pageSize || 10;
             self.currentPageIndex = ko.observable(1);
-            self.deferRender = getDefaultValue(self.serverSide, configuration.deferRender);
+            self.deferRender = getDefaultValue(true, configuration.deferRender);
             self.isProcessing = ko.observable(false);
             self.showProcessing = getDefaultValue(true, configuration.showProcessing);
             self.url = configuration.url;
@@ -85,7 +85,7 @@
             var self = this;
             if(searchValue)
                 self.searchValue(searchValue);
-            if(self.serverSide)
+            if(self.serverSide || self.isAjaxSource)
                 getData.call(self);
         };
 
@@ -128,7 +128,7 @@
             var self = this;
 
             self.isProcessing(true);
-            return http.get(self.url, buildQuery.call(self)).then(function (r) {
+            return $.ajax(self.url, { data: buildQuery.call(self) }).then(function (r) {
                 if (self.draw() > r.draw) return;
                 if (self.currentPageIndex() === 0 && r.recordsTotal > 0) self.currentPageIndex(1);
                 self.data(r.data);
@@ -160,6 +160,25 @@
         ko.dataTable = { vm: dataTable};
     
     })();
+
+    $.fn.showProcessing = function (message) {
+        this.block({
+            overlayCSS: {
+                backgroundColor: '#ffe'
+            },
+            message: (message || 'Processing...'),
+            css: {
+                border: 'none',
+                color: '#345',
+                background: 'none',
+                borderRadius: '7px',
+                left: '35%'
+            }
+        });
+    };
+
+    $.fn.hideProcessing = function(){ this.unblock(); };
+    
         
     // Templates used to render the grid
     var templateEngine = new ko.nativeTemplateEngine();
@@ -242,4 +261,5 @@
         elem.classList.add(className);
         return elem;
     }
+
 })();

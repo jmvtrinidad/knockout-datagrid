@@ -7,7 +7,17 @@
         <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
         <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-        <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">        
+
+        <!--Vendor-->
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+        <link href="http://getbootstrap.com/2.3.2/assets/js/google-code-prettify/prettify.css" rel="stylesheet" />
+
+        <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-debug.js"></script>
+        <script src="js/ko-DataTable.js"></script>
+        <!--End Vendor-->
     </head>
     <body>
         <section class="page-header">
@@ -21,13 +31,135 @@
         <section class="main-content">
             <p>Currently it is use in <code>DurandalJs</code> Application but it can easily used independently in any Web application that uses <code>KnockoutJs</code>.</p>
 
-            <footer class="site-footer">
-                <span class="site-footer-owner"><a href="https://github.com/jmvtrinidad/ko-DataTable">ko-datatable</a> is maintained by <a href="https://github.com/jmvtrinidad">jmvtrinidad</a>.</span>
+            
+            <section>
+                <div class="panel panel-info">
+                    <div class="panel-heading clickable"><span class="glyphicon glyphicon-chevron-up"></span> Javascript Source</div>
+                    <div class="panel-body">
+        
+                        <div class="row bottom-offset">
+                            <div class="col-sm-12">
+                                <div class="form-inline">
+                                    <label for="txtSearch">Search</label>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="txtSearch" placeholder="" data-bind="value: tbl.searchValue, event : { keyup: search }">
+                                    </div>
+                                    <button class="btn btn-info" data-bind="click: search"><i class="glyphicon glyphicon-search"></i>&nbsp;&nbsp;Search</button>
+                                </div>
+                            </div>
+                        </div>
 
+<div id="htmlJavascriptSource" data-bind="simpleGrid: tbl">
+    <table class="table table-bordered table-condensed">
+        <thead>
+            <tr>
+                <td>Username</td>
+                <td>CreatedOn/By</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr data-bind="visible: totalRows() === 0" style="background-color: #f9f9f9;">
+                <td colspan="3">No record/s to display.</td>
+            </tr>
+            <!--ko foreach: itemsOnCurrentPage-->
+            <tr>
+                <td>
+                    <a href="#" data-bind="text:username, click:$parent.alertInfo"></a>
+                </td>
+                <td data-bind="text:emailAddress"></td>
+            </tr>
+            <!--/ko-->
+        </tbody>
+    </table>
+    <span data-bind="text:info()"></span>
+</div>
+                        
+
+                        <div class="row bottom-offset">
+                            <div class="col-sm-12">
+                                <h3>Javascript</h3>
+                                <pre class="prettyprint linenums"> var tbl = new ko.dataTable.vm({ data: items, searchField: 'username' });</pre>
+                            </div>
+                        </div>
+                        <div class="row bottom-offset">
+                            <div class="col-sm-12">
+                                <h3>Html</h3>
+                                <pre class="prettyprint linenums" data-source="#htmlJavascriptSource"></pre>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </section>
+        
+            <section>
+
+                <div class="panel panel-info">
+                    <div class="panel-heading clickable"><span class="glyphicon glyphicon-chevron-up"></span> Ajax Source</div>
+                    <div class="panel-body">
+
+                        <div class="row bottom-offset">
+                            <div class="col-sm-12">
+                                <div class="form-inline">
+                                    <label for="txtSearch">Search</label>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="txtSearch" placeholder="" data-bind="value: tblAjaxSource.searchValue, event : { keyup: searchAjaxSource }">
+                                    </div>
+                                    <button class="btn btn-info" data-bind="click: searchAjaxSource"><i class="glyphicon glyphicon-search"></i>&nbsp;&nbsp;Search</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="htmlJavascriptSource" data-bind="simpleGrid: tblAjaxSource">
+                            <table class="table table-bordered table-condensed">
+                                <thead>
+                                    <tr>
+                                        <td>Username</td>
+                                        <td>CreatedOn/By</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr data-bind="visible: totalRows() === 0" style="background-color: #f9f9f9;">
+                                        <td colspan="3">No record/s to display.</td>
+                                    </tr>
+                                    <!--ko foreach: itemsOnCurrentPage-->
+                                    <tr>
+                                        <td>
+                                            <a href="#" data-bind="text:username, click:$parent.alertInfo"></a>
+                                        </td>
+                                        <td data-bind="text:emailAddress"></td>
+                                    </tr>
+                                    <!--/ko-->
+                                </tbody>
+                            </table>
+                            <span data-bind="text:info()"></span>
+                        </div>
+
+
+                        <div class="row bottom-offset">
+                            <div class="col-sm-12">
+                                <h3>Javascript</h3>
+                                <pre class="prettyprint linenums">var tbl = new ko.dataTable.vm({ url: 'request/GetAjax.json', searchField: 'username' });</pre>
+                            </div>
+                        </div>
+                        <div class="row bottom-offset">
+                            <div class="col-sm-12">
+                                <h3>Html</h3>
+                                <pre class="prettyprint linenums">//Same as JavascriptSource Html</pre>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+            
+            <footer class="site-footer">
                 <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
             </footer>
 
         </section>
+        
+        
 
         <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
@@ -40,5 +172,50 @@
             } catch(err) {}
         </script>
 
+
+        <script type="text/javascript" src="http://getbootstrap.com/2.3.2/assets/js/google-code-prettify/prettify.js"></script>
+        <script>
+            $('[data-source]').each(function(){
+                var $this = $(this),
+                    $source = $($this.data('source'));
+                var text = [];
+                $source.each(function(){
+                    var $s = $(this);
+                    if ($s.attr('type') == 'text/javascript'){
+                        text.push($s.html().replace(/(\n)*/, ''));
+                    } else {
+                        text.push($s.clone().wrap('<div>').parent().html());
+                    }
+                });
+
+                $this.text(text.join('\n\n').replace(/\t/g, '    '));
+            });
+            prettyPrint();
+        </script>
+
+        <script id="javascriptSource">
+            function AppViewModel() {
+                var items = ko.observableArray([]);
+                for(var i = 0; i < 100; i++){
+                    items.push({
+                        username: 'username' + i,
+                        emailAddress: 'username' + i + '@gmail.com'
+                    });
+                }
+
+                this.tbl = new ko.dataTable.vm({ data: items, searchField: 'username' });
+                this.search = function (data, e){ if(typeof e.keyCode === 'undefined' || e.keyCode === 13) this.tbl.search(); };
+
+                this.tblAjaxSource = new ko.dataTable.vm({ url: 'request/GetAjax.json', searchField: 'username' });
+                this.searchAjaxSource = function (data, e){ if(typeof e.keyCode === 'undefined' || e.keyCode === 13) this.tbl.tblAjaxSource(); };
+
+                this.alertInfo = function(data, e){
+                    alert(data.username);
+                };
+            }
+
+            // Activates knockout.js
+            ko.applyBindings(new AppViewModel());
+        </script>
     </body>
 </html>
