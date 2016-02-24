@@ -19,11 +19,13 @@
         function dataTable(configuration){
             var self = this, draw = 0;
             self.disposable = [];
-            self.draw = function (inc){
-                if(!inc) return draw;
+            self.draw = function (inc) {
+                if (!inc) return draw;
                 return draw = draw + inc;
             };
             self.serverSide = configuration.serverSide ? true : false;
+            self.toolbox = configuration.toolbox || {};
+            self.toolbox.refresh = self.serverSide === false ? false : self.toolbox.refresh !== false; //by default true if serverside is true
             self.pageSize = configuration.pageSize || 10;
             self.currentPageIndex = ko.observable(1);
             self.deferRender = getDefaultValue(true, configuration.deferRender);
@@ -31,10 +33,12 @@
             self.showProcessing = getDefaultValue(true, configuration.showProcessing);
             self.url = configuration.url;
             self.searchValue = ko.observable('');
+            self.model = configuration.model;
+            self.error = ko.observable('');
 
-            if(self.serverSide){
+            if (self.serverSide) {
                 self.totalRows = ko.observable(0);
-            } else{
+            } else {
                 self.totalRows = ko.pureComputed(function () {
                     return ko.unwrap(self.filteredItems).length;
                 }, self);
@@ -87,45 +91,45 @@
 
                 return (self.currentPageIndex() - 1) * self.pageSize;
             }, self);
-            self.recordStartNo = ko.pureComputed(function() {
+            self.recordStartNo = ko.pureComputed(function () {
                 return self.totalRows() > self.pageSize ? (self.start() + 1) : self.totalRows() === 0 ? 0 : 1;
             }, self);
             self.recordEndNo = ko.pureComputed(function () {
                 return (self.start() + self.pageSize) < self.totalRows() ? (self.start() + self.pageSize) : self.totalRows();
             }, self);
-            self.info = ko.pureComputed(function() { return 'Showing ' + self.recordStartNo() + ' to ' + self.recordEndNo() + ' of ' + self.totalRows() + ' entries'; },self);
+            self.info = ko.pureComputed(function () { return 'Showing ' + self.recordStartNo() + ' to ' + self.recordEndNo() + ' of ' + self.totalRows() + ' entries'; }, self);
         }
 
-        dataTable.prototype.search = function(searchValue){
+        dataTable.prototype.search = function (searchValue) {
             var self = this;
-            if(searchValue)
+            if (searchValue)
                 self.searchValue(searchValue);
-            if(self.serverSide || self.isAjaxSource)
+            if (self.serverSide || self.isAjaxSource)
                 getData.call(self);
         };
 
-        dataTable.prototype.setCurrentPage = function(pageNo){
+        dataTable.prototype.setCurrentPage = function (pageNo) {
             var self = this;
-            if(self.currentPageIndex() === pageNo || pageNo === 0){
+            if (self.currentPageIndex() === pageNo || pageNo === 0) {
                 return;
             }
             self.currentPageIndex(pageNo);
-            if(!self.serverSide){
+            if (!self.serverSide) {
                 return;
             }
 
             getData.call(self);
         };
 
-        dataTable.prototype.clear = function(){
+        dataTable.prototype.clear = function () {
             var self = this;
             self.data([]);
             self.currentPageIndex(1);
             self.searchValue('');
-            if(self.serverSide) self.totalRows(0);
+            if (self.serverSide) self.totalRows(0);
         };
 
-        dataTable.prototype.dispose = function(){
+        dataTable.prototype.dispose = function () {
             var self = this;
             self.currentPageIndex(0);
             self.isProcessing(false);
@@ -133,7 +137,7 @@
             if (self.serverSide) self.totalRows(0);
             self.data([]);
 
-            for(var i = 0; i < self.disposable.length; i++){
+            for (var i = 0; i < self.disposable.length; i++) {
                 self.disposable[i].dispose();
             }
             self.disposable = [];
@@ -143,12 +147,21 @@
             var self = this;
 
             self.isProcessing(true);
-            return $.ajax(self.url, { data: buildQuery.call(self) }).then(function (r) {
+            return http.get(self.url, buildQuery.call(self)).then(function (r) {
+                self.error('');
                 if (self.draw() > r.draw) return;
                 if (self.currentPageIndex() === 0 && r.recordsTotal > 0) self.currentPageIndex(1);
-                self.data(r.data);
+                self.data(self.model ? r.data.map(function (item) { return new self.model(item); }) : r.data);
                 if (!self.isAjaxSource)
                     self.totalRows(r.recordsTotal);
+            }, function (xhr, errorText, statusText) {
+                if (xhr.status === 500 && xhr.responseText.indexOf('friendlyMessage') !== -1){
+                    self.clear();
+                    var error = JSON.parse(xhr.responseText);
+                    self.error(error.friendlyMessage);
+                    xhr.showError = false;
+                    console.log(error);
+                }
             }).always(function() {
                 self.isProcessing(false);
             });
@@ -166,7 +179,7 @@
             return param;
         }
 
-        function getDefaultValue(defaultValue, valueIf){
+        function getDefaultValue(defaultValue, valueIf) {
             return valueIf === false
                 ? false
             : valueIf ? valueIf : defaultValue;
@@ -195,23 +208,31 @@
     $.fn.hideProcessing = function(){ this.unblock(); };
     
         
-    // Templates used to render the grid
     var templateEngine = new ko.nativeTemplateEngine();
 
     templateEngine.addTemplate = function(templateName, templateMarkup){
         document.write("<script type='text/html' id='" + templateName + "'>" + templateMarkup + '<' + '/script>');
     };
 
+    templateEngine.addTemplate('ko_simpleGrid_toolbox', '<div class="pull-right" style="padding-right: 10px;">\
+<button data-bind="click:search.bind($data,undefined)" class="btn btn-default"><span class="glyphicon glyphicon-refresh"></span></button>\
+</div>');
+
+    templateEngine.addTemplate('ko_simpleGrid_error', '<div data-bind="visible: error() !== \'\'" class="alert alert-danger">\
+<strong ><a href="#" class="alert-link" data-bind="click:search.bind($data,undefined)">Please try again!</a></strong>\
+<p data-bind="text:error()"></p>\
+</div>');
+
     templateEngine.addTemplate('ko_simpleGrid_pageLinks', '<div><ul class="pagination pull-right"> ' +
-                               '<li data-bind="css:{disabled:currentPageIndex() === 1 || 0 === maxPageIndex()}"><a href="#" aria-label="Previous" data-bind="click:function(){setCurrentPage(1)}"><span aria-hidden="true">&laquo;</span></a></li> ' +
-                               '<li data-bind="css:{disabled:currentPageIndex() === 1 || 0 === maxPageIndex()}"><a href="#" aria-label="Previous" data-bind="click:function(){if(currentPageIndex() !== 1)setCurrentPage(currentPageIndex() - 1)}"><span aria-hidden="true">&lsaquo;</span></a></li> ' +
-                    '<!-- ko foreach: ko.utils.range(pageStartNo(), pageEndNo()) --> ' +
-                    '<li data-bind="css: {active: $root.currentPageIndex() === $data}"><a href="#" data-bind="text: $data, click: function() { $root.setCurrentPage($data) }, css: { selected: $data == $root.currentPageIndex() }"></a></li> ' +
-                    '<!-- /ko --> ' +
-                               '<li data-bind="css:{disabled:currentPageIndex() === maxPageIndex() || 0 === maxPageIndex()}"><a href="#" aria-label="Last" data-bind="click:function(){if(currentPageIndex() !== maxPageIndex())setCurrentPage(currentPageIndex() + 1)}"><span aria-hidden="true">&rsaquo;</span></a></li> ' +
-                               '<li data-bind="css:{disabled:currentPageIndex() === maxPageIndex() || 0 === maxPageIndex()}"><a href="#" aria-label="Last" data-bind="click:function(){setCurrentPage(maxPageIndex())}"><span aria-hidden="true">&raquo;</span></a></li> ' +
-                '</ul></div>');
-    
+                               '<li data-bind="css:{disabled:currentPageIndex() === 1 || 0 === maxPageIndex()}"><a href="#" aria-label="Previous" data-bind="click:function(){setCurrentPage(1)}"><span aria-hidden="true">«</span></a></li> ' +
+                               '<li data-bind="css:{disabled:currentPageIndex() === 1 || 0 === maxPageIndex()}"><a href="#" aria-label="Previous" data-bind="click:function(){if(currentPageIndex() !== 1)setCurrentPage(currentPageIndex() - 1)}"><span aria-hidden="true">‹</span></a></li> ' +
+                               '<!-- ko foreach: ko.utils.range(pageStartNo(), pageEndNo()) --> ' +
+                               '<li data-bind="css: {active: $root.currentPageIndex() === $data}"><a href="#" data-bind="text: $data, click: function() { $root.setCurrentPage($data) }, css: { selected: $data == $root.currentPageIndex() }"></a></li> ' +
+                               '<!-- /ko --> ' +
+                               '<li data-bind="css:{disabled:currentPageIndex() === maxPageIndex() || 0 === maxPageIndex()}"><a href="#" aria-label="Last" data-bind="click:function(){if(currentPageIndex() !== maxPageIndex() && 0 !== maxPageIndex())setCurrentPage(currentPageIndex() + 1)}"><span aria-hidden="true">›</span></a></li> ' +
+                               '<li data-bind="css:{disabled:currentPageIndex() === maxPageIndex() || 0 === maxPageIndex()}"><a href="#" aria-label="Last" data-bind="click:function(){setCurrentPage(maxPageIndex())}"><span aria-hidden="true">»</span></a></li> ' +
+                               '</ul></div>');
+
     // The "simpleGrid" binding
     ko.bindingHandlers.simpleGrid = {
         init: function (element, valueAccessor, allBindings, viewModel, bindingContext){
@@ -238,13 +259,37 @@
             var viewModel = viewModelAccessor();
 
             // Allow the default templates to be overridden
-            var tableTemplateName = allBindings.get('simpleGridTableTemplate') || 'ko_simpleGrid_pageLinks',
+            var errorTemplateName = allBindings.get('simpleGridErrorTemplate') || 'ko_simpleGrid_error',
+                toolboxTemplateName = allBindings.get('simpleGridTooloboxTemplate') || 'ko_simpleGrid_toolbox',
                 pageLinksTemplateName = allBindings.get('simpleGridPagerTemplate') || 'ko_simpleGrid_pageLinks';
 
-            // Render the page links
-            var row = createElem('div', 'row');
+            //var columnCount = element.getElementsByTagName('thead')[0].getElementsByTagName('td').length;
+            //var noRecordRow = '<tr data-bind="visible: totalRows() === 0" style="background-color: #f9f9f9;">\
+            //                                                    <td colspan="'+columnCount+'">No record/s to display.</td>\
+            //                                                </tr>';
+            //var body = element.getElementsByTagName('tbody')[0];
+            //body.appendChild($(noRecordRow)[0]);
+            var row;
+            if (viewModel.serverSide && viewModel.toolbox.refresh) {
+                // Render the toolbox
+                row = createElem('div', 'row');
+                row.appendChild(createElem('div', 'col-sm-12'));
+                element.insertBefore(row, element.firstChild);
+                //var pageLinksContainer = element.appendChild(row);
+                ko.renderTemplate(toolboxTemplateName, viewModel, { templateEngine: templateEngine }, row.childNodes[0], 'replaceChildren');
+            }
+
+            // Render the error handler
+            row = createElem('div', 'row');
             row.appendChild(createElem('div', 'col-sm-12'));
+            //element.insertBefore(row, element.firstChild);
             var pageLinksContainer = element.appendChild(row);
+            ko.renderTemplate(errorTemplateName, viewModel, { templateEngine: templateEngine }, pageLinksContainer.childNodes[0], 'replaceChildren');
+
+            // Render the page links
+            row = createElem('div', 'row');
+            row.appendChild(createElem('div', 'col-sm-12'));
+            pageLinksContainer = element.appendChild(row);
             ko.renderTemplate(pageLinksTemplateName, viewModel, { templateEngine: templateEngine }, pageLinksContainer.childNodes[0], 'replaceChildren');
 
             element.appendChild(createElem('div', 'isProcessing'));
@@ -252,24 +297,13 @@
             if (viewModel.showProcessing)
                 viewModel.disposable.push(viewModel.isProcessing.subscribe(function (val) {
                     if (val)
-                        $(element).block({
-                            overlayCSS: {
-                                backgroundColor: '#fff'
-                            },
-                            message: (message || 'Processing...'),
-                            css: {
-                                border: 'none',
-                                color: '#345',
-                                background: 'none',
-                                borderRadius: '10px',
-                                left: '35%'
-                            }
-                        });
+                        $(element).showProcessing();
                     else
-                        $(element).unblock();
+                        $(element).hideProcessing();
                 }));
         }
     };
+
 
     function createElem(tag, className){
         var elem = document.createElement(tag);
