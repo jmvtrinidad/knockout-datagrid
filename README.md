@@ -1,4 +1,4 @@
-# ko-DataTable
+# ko-datagrid
 KnockoutJs Datatable is a library that can be used just like jQuery DataTables.
 
 Please refer to [demo][1]
