@@ -4,7 +4,7 @@
         <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
         
         <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-debug.js"></script>
-        <script src="C:\Users\jmvtrinidad\Source\Repos\ko-DataTable\ko-DataTable.js"></script>
+        <script src="C:\Users\jmvtrinidad\Source\Repos\knockout-dataGrid\knockout-dataGrid.js"></script>
     </head>
     <body>
 
@@ -20,7 +20,7 @@
             </div>
         </div>
         
-        <div data-bind="simpleGrid: tbl">
+        <div data-bind="dataGrid: tbl">
             <table class="table table-bordered table-condensed">
                 <thead>
                     <tr>
@@ -55,7 +55,7 @@
                     });
                 }
 
-                this.tbl = new ko.dataTable.vm({ data: this.items, searchField: 'username' });
+                this.tbl = new ko.dataGrid.vm({ data: this.items, searchField: 'username' });
 
                 this.search = function (data, e){ if(typeof e.keyCode === 'undefined' || e.keyCode === 13) this.tbl.search(); };
 

@@ -2,7 +2,7 @@
 <html lang="en-us">
     <head>
         <meta charset="UTF-8">
-        <title>ko-datatable by jmvtrinidad</title>
+        <title>Knockout-DataGrid by jmvtrinidad</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
         <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -16,16 +16,16 @@
         <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-debug.js"></script>
-        <script src="js/ko-DataTable.js"></script>
+        <script src="js/Knockout-DataGrid.js"></script>
         <!--End Vendor-->
     </head>
     <body>
         <section class="page-header">
-            <h1 class="project-name">ko-datatable</h1>
-            <h2 class="project-tagline">Knockout Datatable is a library that can be used just like jQuery DataTables.</h2>
-            <a href="https://github.com/jmvtrinidad/ko-DataTable" class="btn">View on GitHub</a>
-            <a href="https://github.com/jmvtrinidad/ko-DataTable/zipball/master" class="btn">Download .zip</a>
-            <a href="https://github.com/jmvtrinidad/ko-DataTable/tarball/master" class="btn">Download .tar.gz</a>
+            <h1 class="project-name">Knockout-DataGrid</h1>
+            <h2 class="project-tagline">Knockout DataGrid is a library that can be used just like jQuery DataTables.</h2>
+            <a href="https://github.com/jmvtrinidad/Knockout-DataGrid" class="btn">View on GitHub</a>
+            <a href="https://github.com/jmvtrinidad/Knockout-DataGrid/zipball/master" class="btn">Download .zip</a>
+            <a href="https://github.com/jmvtrinidad/Knockout-DataGrid/tarball/master" class="btn">Download .tar.gz</a>
         </section>
 
         <section class="main-content">
@@ -49,7 +49,7 @@
                             </div>
                         </div>
 
-<div id="htmlJavascriptSource" data-bind="simpleGrid: tbl">
+<div id="htmlJavascriptSource" data-bind="dataGrid: tbl">
     <table class="table table-bordered table-condensed">
         <thead>
             <tr>
@@ -78,7 +78,7 @@
                         <div class="row bottom-offset">
                             <div class="col-sm-12">
                                 <h3>Javascript</h3>
-                                <pre class="prettyprint linenums"> var tbl = new ko.dataTable.vm({ data: items, searchField: 'username' });</pre>
+                                <pre class="prettyprint linenums"> var tbl = new ko.dataGrid.vm({ data: items, searchField: 'username' });</pre>
                             </div>
                         </div>
                         <div class="row bottom-offset">
@@ -110,7 +110,7 @@
                             </div>
                         </div>
 
-                        <div id="htmlJavascriptSource" data-bind="simpleGrid: tblAjaxSource">
+                        <div id="htmlJavascriptSource" data-bind="dataGrid: tblAjaxSource">
                             <table class="table table-bordered table-condensed">
                                 <thead>
                                     <tr>
@@ -139,7 +139,7 @@
                         <div class="row bottom-offset">
                             <div class="col-sm-12">
                                 <h3>Javascript</h3>
-                                <pre class="prettyprint linenums">var tbl = new ko.dataTable.vm({ url: 'request/GetAjax.json', searchField: 'username' });</pre>
+                                <pre class="prettyprint linenums">var tbl = new ko.dataGrid.vm({ url: 'request/GetAjax.json', searchField: 'username' });</pre>
                             </div>
                         </div>
                         <div class="row bottom-offset">
@@ -203,10 +203,10 @@
                     });
                 }
 
-                this.tbl = new ko.dataTable.vm({ data: items, searchField: 'username' });
+                this.tbl = new ko.dataGrid.vm({ data: items, searchField: 'username' });
                 this.search = function (data, e){ if(typeof e.keyCode === 'undefined' || e.keyCode === 13) this.tbl.search(); };
 
-                this.tblAjaxSource = new ko.dataTable.vm({ url: 'request/GetAjax.json', searchField: 'username' });
+                this.tblAjaxSource = new ko.dataGrid.vm({ url: 'request/GetAjax.json', searchField: 'username' });
                 this.searchAjaxSource = function (data, e){ if(typeof e.keyCode === 'undefined' || e.keyCode === 13) this.tbl.tblAjaxSource(); };
 
                 this.alertInfo = function(data, e){
