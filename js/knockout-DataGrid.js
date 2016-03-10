@@ -16,7 +16,7 @@
         //:totalRows:int
         //observable:searchValue
         
-        function dataTable(configuration){
+        function dataGrid(configuration){
             var self = this, draw = 0;
             self.disposable = [];
             self.draw = function (inc){
@@ -96,7 +96,7 @@
             self.info = ko.pureComputed(function() { return 'Showing ' + self.recordStartNo() + ' to ' + self.recordEndNo() + ' of ' + self.totalRows() + ' entries'; },self);
         }
 
-        dataTable.prototype.search = function(searchValue){
+        dataGrid.prototype.search = function(searchValue){
             var self = this;
             if(searchValue)
                 self.searchValue(searchValue);
@@ -104,7 +104,7 @@
                 getData.call(self);
         };
 
-        dataTable.prototype.setCurrentPage = function(pageNo){
+        dataGrid.prototype.setCurrentPage = function(pageNo){
             var self = this;
             if(self.currentPageIndex() === pageNo || pageNo === 0){
                 return;
@@ -117,7 +117,7 @@
             getData.call(self);
         };
 
-        dataTable.prototype.clear = function(){
+        dataGrid.prototype.clear = function(){
             var self = this;
             self.data([]);
             self.currentPageIndex(1);
@@ -125,7 +125,7 @@
             if(self.serverSide) self.totalRows(0);
         };
 
-        dataTable.prototype.dispose = function(){
+        dataGrid.prototype.dispose = function(){
             var self = this;
             self.currentPageIndex(0);
             self.isProcessing(false);
@@ -172,7 +172,7 @@
             : valueIf ? valueIf : defaultValue;
         }
 
-        ko.dataTable = { vm: dataTable};
+        ko.dataGrid = { vm: dataGrid};
     
     })();
 
@@ -202,7 +202,7 @@
         document.write("<script type='text/html' id='" + templateName + "'>" + templateMarkup + '<' + '/script>');
     };
 
-    templateEngine.addTemplate('ko_simpleGrid_pageLinks', '<div><ul class="pagination pull-right"> ' +
+    templateEngine.addTemplate('ko_dataGrid_pageLinks', '<div><ul class="pagination pull-right"> ' +
                                '<li data-bind="css:{disabled:currentPageIndex() === 1 || 0 === maxPageIndex()}"><a href="#" aria-label="Previous" data-bind="click:function(){setCurrentPage(1)}"><span aria-hidden="true">&laquo;</span></a></li> ' +
                                '<li data-bind="css:{disabled:currentPageIndex() === 1 || 0 === maxPageIndex()}"><a href="#" aria-label="Previous" data-bind="click:function(){if(currentPageIndex() !== 1)setCurrentPage(currentPageIndex() - 1)}"><span aria-hidden="true">&lsaquo;</span></a></li> ' +
                     '<!-- ko foreach: ko.utils.range(pageStartNo(), pageEndNo()) --> ' +
@@ -212,8 +212,8 @@
                                '<li data-bind="css:{disabled:currentPageIndex() === maxPageIndex() || 0 === maxPageIndex()}"><a href="#" aria-label="Last" data-bind="click:function(){setCurrentPage(maxPageIndex())}"><span aria-hidden="true">&raquo;</span></a></li> ' +
                 '</ul></div>');
     
-    // The "simpleGrid" binding
-    ko.bindingHandlers.simpleGrid = {
+    // The "dataGrid" binding
+    ko.bindingHandlers.dataGrid = {
         init: function (element, valueAccessor, allBindings, viewModel, bindingContext){
             var vmAccessor = valueAccessor();
 
@@ -238,8 +238,8 @@
             var viewModel = viewModelAccessor();
 
             // Allow the default templates to be overridden
-            var tableTemplateName = allBindings.get('simpleGridTableTemplate') || 'ko_simpleGrid_pageLinks',
-                pageLinksTemplateName = allBindings.get('simpleGridPagerTemplate') || 'ko_simpleGrid_pageLinks';
+            var tableTemplateName = allBindings.get('dataGridTableTemplate') || 'ko_dataGrid_pageLinks',
+                pageLinksTemplateName = allBindings.get('dataGridPagerTemplate') || 'ko_dataGrid_pageLinks';
 
             // Render the page links
             var row = createElem('div', 'row');
