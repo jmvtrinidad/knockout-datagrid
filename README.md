@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 # ko-DataGrid
 Knockout DataGrid is a library that can be used just like jQuery DataTables.
+=======
+# ko-datagrid
+KnockoutJs Datatable is a library that can be used just like jQuery DataTables.
+>>>>>>> refs/remotes/origin/master
 
 Please refer to [demo][1]
 
