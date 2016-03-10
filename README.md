@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-# ko-DataGrid
-Knockout DataGrid is a library that can be used just like jQuery DataTables.
-=======
+
 # ko-datagrid
 KnockoutJs Datatable is a library that can be used just like jQuery DataTables.
->>>>>>> refs/remotes/origin/master
 
 Please refer to [demo][1]
 
@@ -14,4 +10,4 @@ knockout-dataGrid supports:
  - ServerSide Processing  (`var tbl = new ko.dataGrid.vm({ url: 'Users/GetPerPage', serverSide: true });`)
 
 
-  [1]: http://jmvtrinidad.github.io/knockout-DataGrid/.
+[1]: http://jmvtrinidad.github.io/knockout-datagrid/.

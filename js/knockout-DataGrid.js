@@ -1,7 +1,7 @@
 (function () {
-    
-    (function(){
-        
+
+    (function () {
+
         //Available option for creating instance
         //int:pageSize        
         //bool:serverSide
@@ -9,14 +9,14 @@
         //bool:deferRender
         //bool:showProcessing
         //string:searchField
-        
+
         //Can be used in html data-binding        
         //:itemsOnCurrentPage:observableArray
         //:info:string
         //:totalRows:int
         //observable:searchValue
-        
-        function dataGrid(configuration){
+
+        function dataGrid(configuration) {
             var self = this, draw = 0;
             self.disposable = [];
             self.draw = function (inc) {
@@ -100,11 +100,7 @@
             self.info = ko.pureComputed(function () { return 'Showing ' + self.recordStartNo() + ' to ' + self.recordEndNo() + ' of ' + self.totalRows() + ' entries'; }, self);
         }
 
-<<<<<<< HEAD:js/knockout-DataGrid.js
-        dataGrid.prototype.search = function(searchValue){
-=======
-        dataTable.prototype.search = function (searchValue) {
->>>>>>> refs/remotes/origin/master:js/ko-DataTable.js
+        dataGrid.prototype.search = function (searchValue) {
             var self = this;
             if (searchValue)
                 self.searchValue(searchValue);
@@ -112,11 +108,7 @@
                 getData.call(self);
         };
 
-<<<<<<< HEAD:js/knockout-DataGrid.js
-        dataGrid.prototype.setCurrentPage = function(pageNo){
-=======
-        dataTable.prototype.setCurrentPage = function (pageNo) {
->>>>>>> refs/remotes/origin/master:js/ko-DataTable.js
+        dataGrid.prototype.setCurrentPage = function (pageNo) {
             var self = this;
             if (self.currentPageIndex() === pageNo || pageNo === 0) {
                 return;
@@ -129,11 +121,7 @@
             getData.call(self);
         };
 
-<<<<<<< HEAD:js/knockout-DataGrid.js
-        dataGrid.prototype.clear = function(){
-=======
-        dataTable.prototype.clear = function () {
->>>>>>> refs/remotes/origin/master:js/ko-DataTable.js
+        dataGrid.prototype.clear = function () {
             var self = this;
             self.data([]);
             self.currentPageIndex(1);
@@ -141,11 +129,7 @@
             if (self.serverSide) self.totalRows(0);
         };
 
-<<<<<<< HEAD:js/knockout-DataGrid.js
-        dataGrid.prototype.dispose = function(){
-=======
-        dataTable.prototype.dispose = function () {
->>>>>>> refs/remotes/origin/master:js/ko-DataTable.js
+        dataGrid.prototype.dispose = function () {
             var self = this;
             self.currentPageIndex(0);
             self.isProcessing(false);
@@ -163,7 +147,7 @@
             var self = this;
 
             self.isProcessing(true);
-            return http.get(self.url, buildQuery.call(self)).then(function (r) {
+            return $.ajax(self.url, {data:buildQuery.call(self)}).then(function (r) {
                 self.error('');
                 if (self.draw() > r.draw) return;
                 if (self.currentPageIndex() === 0 && r.recordsTotal > 0) self.currentPageIndex(1);
@@ -177,6 +161,8 @@
                     self.error(error.friendlyMessage);
                     xhr.showError = false;
                     console.log(error);
+                }else{
+                    self.error(statusText);
                 }
             }).always(function() {
                 self.isProcessing(false);
@@ -200,9 +186,10 @@
                 ? false
             : valueIf ? valueIf : defaultValue;
         }
+        ko.dataGrid = {
+            vm: dataGrid
+        };
 
-        ko.dataGrid = { vm: dataGrid};
-    
     })();
 
     $.fn.showProcessing = function (message) {
@@ -221,51 +208,37 @@
         });
     };
 
-    $.fn.hideProcessing = function(){ this.unblock(); };
-    
-        
+    $.fn.hideProcessing = function () {
+        this.unblock();
+    };
+
+
     var templateEngine = new ko.nativeTemplateEngine();
 
-    templateEngine.addTemplate = function(templateName, templateMarkup){
+    templateEngine.addTemplate = function (templateName, templateMarkup) {
         document.write("<script type='text/html' id='" + templateName + "'>" + templateMarkup + '<' + '/script>');
     };
 
-<<<<<<< HEAD:js/knockout-DataGrid.js
     templateEngine.addTemplate('ko_dataGrid_pageLinks', '<div><ul class="pagination pull-right"> ' +
-                               '<li data-bind="css:{disabled:currentPageIndex() === 1 || 0 === maxPageIndex()}"><a href="#" aria-label="Previous" data-bind="click:function(){setCurrentPage(1)}"><span aria-hidden="true">&laquo;</span></a></li> ' +
-                               '<li data-bind="css:{disabled:currentPageIndex() === 1 || 0 === maxPageIndex()}"><a href="#" aria-label="Previous" data-bind="click:function(){if(currentPageIndex() !== 1)setCurrentPage(currentPageIndex() - 1)}"><span aria-hidden="true">&lsaquo;</span></a></li> ' +
-                    '<!-- ko foreach: ko.utils.range(pageStartNo(), pageEndNo()) --> ' +
-                    '<li data-bind="css: {active: $root.currentPageIndex() === $data}"><a href="#" data-bind="text: $data, click: function() { $root.setCurrentPage($data) }, css: { selected: $data == $root.currentPageIndex() }"></a></li> ' +
-                    '<!-- /ko --> ' +
-                               '<li data-bind="css:{disabled:currentPageIndex() === maxPageIndex() || 0 === maxPageIndex()}"><a href="#" aria-label="Last" data-bind="click:function(){if(currentPageIndex() !== maxPageIndex())setCurrentPage(currentPageIndex() + 1)}"><span aria-hidden="true">&rsaquo;</span></a></li> ' +
-                               '<li data-bind="css:{disabled:currentPageIndex() === maxPageIndex() || 0 === maxPageIndex()}"><a href="#" aria-label="Last" data-bind="click:function(){setCurrentPage(maxPageIndex())}"><span aria-hidden="true">&raquo;</span></a></li> ' +
-                '</ul></div>');
-    
+        '<li data-bind="css:{disabled:currentPageIndex() === 1 || 0 === maxPageIndex()}"><a href="#" aria-label="Previous" data-bind="click:function(){setCurrentPage(1)}"><span aria-hidden="true">&laquo;</span></a></li> ' +
+        '<li data-bind="css:{disabled:currentPageIndex() === 1 || 0 === maxPageIndex()}"><a href="#" aria-label="Previous" data-bind="click:function(){if(currentPageIndex() !== 1)setCurrentPage(currentPageIndex() - 1)}"><span aria-hidden="true">&lsaquo;</span></a></li> ' +
+        '<!-- ko foreach: ko.utils.range(pageStartNo(), pageEndNo()) --> ' +
+        '<li data-bind="css: {active: $root.currentPageIndex() === $data}"><a href="#" data-bind="text: $data, click: function() { $root.setCurrentPage($data) }, css: { selected: $data == $root.currentPageIndex() }"></a></li> ' +
+        '<!-- /ko --> ' +
+        '<li data-bind="css:{disabled:currentPageIndex() === maxPageIndex() || 0 === maxPageIndex()}"><a href="#" aria-label="Last" data-bind="click:function(){if(currentPageIndex() !== maxPageIndex())setCurrentPage(currentPageIndex() + 1)}"><span aria-hidden="true">&rsaquo;</span></a></li> ' +
+        '<li data-bind="css:{disabled:currentPageIndex() === maxPageIndex() || 0 === maxPageIndex()}"><a href="#" aria-label="Last" data-bind="click:function(){setCurrentPage(maxPageIndex())}"><span aria-hidden="true">&raquo;</span></a></li> ' +
+        '</ul></div>');
+    templateEngine.addTemplate('ko_dataGrid_toolbox', '<div class="pull-right" style="padding-right: 10px;">\
+        <button data-bind="click:search.bind($data,undefined)" class="btn btn-default"><span class="glyphicon glyphicon-refresh"></span></button>\
+        </div>');
+    templateEngine.addTemplate('ko_dataGrid_error', '<div data-bind="visible: error() !== \'\'" class="alert alert-danger">\
+        <strong ><a href="#" class="alert-link" data-bind="click:search.bind($data,undefined)">Please try again!</a></strong>\
+        <p data-bind="text:error()"></p>\
+        </div>');
+
+
     // The "dataGrid" binding
     ko.bindingHandlers.dataGrid = {
-=======
-    templateEngine.addTemplate('ko_simpleGrid_toolbox', '<div class="pull-right" style="padding-right: 10px;">\
-<button data-bind="click:search.bind($data,undefined)" class="btn btn-default"><span class="glyphicon glyphicon-refresh"></span></button>\
-</div>');
-
-    templateEngine.addTemplate('ko_simpleGrid_error', '<div data-bind="visible: error() !== \'\'" class="alert alert-danger">\
-<strong ><a href="#" class="alert-link" data-bind="click:search.bind($data,undefined)">Please try again!</a></strong>\
-<p data-bind="text:error()"></p>\
-</div>');
-
-    templateEngine.addTemplate('ko_simpleGrid_pageLinks', '<div><ul class="pagination pull-right"> ' +
-                               '<li data-bind="css:{disabled:currentPageIndex() === 1 || 0 === maxPageIndex()}"><a href="#" aria-label="Previous" data-bind="click:function(){setCurrentPage(1)}"><span aria-hidden="true">«</span></a></li> ' +
-                               '<li data-bind="css:{disabled:currentPageIndex() === 1 || 0 === maxPageIndex()}"><a href="#" aria-label="Previous" data-bind="click:function(){if(currentPageIndex() !== 1)setCurrentPage(currentPageIndex() - 1)}"><span aria-hidden="true">‹</span></a></li> ' +
-                               '<!-- ko foreach: ko.utils.range(pageStartNo(), pageEndNo()) --> ' +
-                               '<li data-bind="css: {active: $root.currentPageIndex() === $data}"><a href="#" data-bind="text: $data, click: function() { $root.setCurrentPage($data) }, css: { selected: $data == $root.currentPageIndex() }"></a></li> ' +
-                               '<!-- /ko --> ' +
-                               '<li data-bind="css:{disabled:currentPageIndex() === maxPageIndex() || 0 === maxPageIndex()}"><a href="#" aria-label="Last" data-bind="click:function(){if(currentPageIndex() !== maxPageIndex() && 0 !== maxPageIndex())setCurrentPage(currentPageIndex() + 1)}"><span aria-hidden="true">›</span></a></li> ' +
-                               '<li data-bind="css:{disabled:currentPageIndex() === maxPageIndex() || 0 === maxPageIndex()}"><a href="#" aria-label="Last" data-bind="click:function(){setCurrentPage(maxPageIndex())}"><span aria-hidden="true">»</span></a></li> ' +
-                               '</ul></div>');
-
-    // The "simpleGrid" binding
-    ko.bindingHandlers.simpleGrid = {
->>>>>>> refs/remotes/origin/master:js/ko-DataTable.js
         init: function (element, valueAccessor, allBindings, viewModel, bindingContext){
             var vmAccessor = valueAccessor();
 
@@ -290,14 +263,9 @@
             var viewModel = viewModelAccessor();
 
             // Allow the default templates to be overridden
-<<<<<<< HEAD:js/knockout-DataGrid.js
-            var tableTemplateName = allBindings.get('dataGridTableTemplate') || 'ko_dataGrid_pageLinks',
+            var errorTemplateName = allBindings.get('dataGridErrorTemplate') || 'ko_dataGrid_error',
+                toolboxTemplateName = allBindings.get('dataGridTooloboxTemplate') || 'ko_dataGrid_toolbox',
                 pageLinksTemplateName = allBindings.get('dataGridPagerTemplate') || 'ko_dataGrid_pageLinks';
-=======
-            var errorTemplateName = allBindings.get('simpleGridErrorTemplate') || 'ko_simpleGrid_error',
-                toolboxTemplateName = allBindings.get('simpleGridTooloboxTemplate') || 'ko_simpleGrid_toolbox',
-                pageLinksTemplateName = allBindings.get('simpleGridPagerTemplate') || 'ko_simpleGrid_pageLinks';
->>>>>>> refs/remotes/origin/master:js/ko-DataTable.js
 
             //var columnCount = element.getElementsByTagName('thead')[0].getElementsByTagName('td').length;
             //var noRecordRow = '<tr data-bind="visible: totalRows() === 0" style="background-color: #f9f9f9;">\
@@ -340,8 +308,7 @@
         }
     };
 
-
-    function createElem(tag, className){
+    function createElem(tag, className) {
         var elem = document.createElement(tag);
         elem.classList.add(className);
         return elem;
