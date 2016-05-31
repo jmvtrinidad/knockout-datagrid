@@ -9,6 +9,9 @@
         //bool:deferRender
         //bool:showProcessing
         //string:searchField
+        //object: toolbox
+        //bool: toolbox.refresh
+        //function:model
 
         //Can be used in html data-binding        
         //:itemsOnCurrentPage:observableArray
