@@ -1,7 +1,7 @@
 
 # ko-datagrid
 
-KnockoutJs datagrid is a library that can be used just like [jQuery.DataTables](https://datatables.net/). It can be used in any UI that needs a paging or server side processing. It was inspired through the [work](http://knockoutjs.com/examples/grid.html) of [Ryan Niemeyer](https://github.com/rniemeyer).
+KnockoutJs datagrid is a library that can be used just like [jQuery.DataTables](https://datatables.net/). It can be used in any UI that needs a paging or server side processing. It was inspired through the [work](http://knockoutjs.com/examples/grid.html) of [Ryan Niemeyer](https://github.com/rniemeyer). It also provides class for ASP.NET MVC Model binding.
 
 Please refer to [demo](http://jmvtrinidad.github.io/knockout-datagrid/)
 
@@ -70,6 +70,24 @@ Please refer to [demo](http://jmvtrinidad.github.io/knockout-datagrid/)
     ```
 
 5. [demo](http://jmvtrinidad.github.io/knockout-datagrid/)
+
+##ASP.NET MVC Model binding
+
+	For JsonCamelCaseResult(), please refer to this [answer](http://stackoverflow.com/questions/19445730/how-can-i-return-camelcase-json-serialized-by-json-net-from-asp-net-mvc-controll#answer-19445731) on [StackOverflow](http://stackoverflow.com/).
+	
+    ```
+        public ActionResult GetData(DataGridRequest<string> request)
+        {
+            using (var manager = new DataManager())
+            {
+                var result = manager.Select(request);
+
+                return new JsonCamelCaseResult(new DataGridResponse<Criteria>(result, request),
+                    JsonRequestBehavior.AllowGet);
+            }
+        }
+    ```
+
 
 ##License
 
